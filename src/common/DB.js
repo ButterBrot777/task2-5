@@ -11,9 +11,9 @@ DB.users.push(new User(), new User(), new User());
 // actions for users
 
 const getAllUsers = async () => DB.users.slice(0);
-const getUserByID = async (id) => DB.users.filter(user => user.id === id)[0];
+const getUserByID = async id => DB.users.filter(user => user.id === id)[0];
 
-const createUser = async (user) => {
+const createUser = async user => {
   DB.users.push(user);
   return getUserByID(user.id);
 };
@@ -34,4 +34,12 @@ const removeUser = async user => {
   if (DB.users.length > 0 && lastUser !== user) {
     DB.users[userIndex] = lastUser;
   }
+};
+
+module.exports = {
+  getAllUsers,
+  getUserByID,
+  createUser,
+  updateUser,
+  removeUser
 };
