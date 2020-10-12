@@ -8,8 +8,8 @@ router.route('/').get(async (req, res) => {
 });
 
 router.route('/').post(async (req, res) => {
-	const board = await boardsService.create(new Board(req.body));
-	res.json(board);
+  const board = await boardsService.create(new Board(req.body));
+  res.json(board);
 });
 
 router.route('/:id').get(async (req, res) => {
