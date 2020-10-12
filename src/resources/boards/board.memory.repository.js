@@ -34,10 +34,4 @@ const remove = async (id) => {
   return boardToRemove;
 };
 
-module.exports = {
-  getAll,
-  getByID,
-  create,
-  update,
-  remove
-};
+module.exports = { getAll, getByID, create, update, remove };
