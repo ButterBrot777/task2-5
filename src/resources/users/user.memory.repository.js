@@ -2,7 +2,7 @@ const DB = require('../../common/DB');
 
 const getAll = async () => DB.getAllUsers();
 
-const getByID = async (id) => {
+const getByID = async id => {
   const user = await DB.getUserByID(id);
   if (!user) {
     throw new Error(`User with id ${id} was not found`);
@@ -10,7 +10,7 @@ const getByID = async (id) => {
   return user;
 };
 
-const create = async (user) => DB.createUser(user);
+const create = async user => DB.createUser(user);
 
 const update = async (id, body) => {
   const userFromDB = await DB.getUserByID(id);
@@ -24,14 +24,14 @@ const update = async (id, body) => {
   return updatedUser;
 };
 
-const remove = async (id) => {
+const remove = async id => {
   const user = await DB.getUserByID(id);
 
   if (!user) {
     throw new Error(`User with id ${id} was not found`);
   }
 
-  const userToRemove = JSON.parse(JSON.stringify(user));
+  const userToRemove = Object.assign({}, user);
   await DB.removeUser(userToRemove);
   return userToRemove;
 };

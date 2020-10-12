@@ -2,7 +2,6 @@ const User = require('../resources/users/user.model');
 const Board = require('../resources/boards/board.model');
 const Task = require('../resources/tasks/task.model');
 
-
 const DB = {
   users: [],
   boards: [],
@@ -13,10 +12,10 @@ DB.users.push(new User(), new User(), new User());
 const customeBoard = new Board();
 DB.boards.push(customeBoard);
 DB.tasks.push(
-	new Task({boardId: customeBoard.id}),
-	new Task({boardId: customeBoard.id}),
-	new Task({boardId: customeBoard.id}),
-)
+  new Task({ boardId: customeBoard.id }),
+  new Task({ boardId: customeBoard.id }),
+  new Task({ boardId: customeBoard.id })
+);
 
 // actions for users
 
@@ -44,17 +43,17 @@ const removeUser = async user => {
   const lastUser = DB.users.pop();
   if (DB.users.length > 0 && lastUser !== user) {
     DB.users[userIndex] = lastUser;
-	}
-	removeUserTasks(user.id);
+  }
+  removeUserTasks(user.id);
 };
 
 // action for boards
 
 const getAllBoards = async () => DB.boards.slice(0);
 
-const getBoardByID = async (id) => DB.boards.filter(board => board.id === id)[0];
+const getBoardByID = async id => DB.boards.filter(board => board.id === id)[0];
 
-const createBoard = async (board) => {
+const createBoard = async board => {
   DB.boards.push(board);
   return getBoardByID(board.id);
 };
@@ -69,12 +68,14 @@ const updateBoard = async (dbBoard, body) => {
 };
 
 const removeBoard = async board => {
-  const boardIndex = DB.boards.findIndex(boardElem => boardElem.id === board.id);
+  const boardIndex = DB.boards.findIndex(
+    boardElem => boardElem.id === board.id
+  );
   const lastBoard = DB.boards.pop();
   if (DB.boards.length > 0 && lastBoard !== board) {
     DB.boards[boardIndex] = lastBoard;
-	}
-	removerBoardTasks(board.id);
+  }
+  removerBoardTasks(board.id);
 };
 
 // actions for tasks
@@ -117,14 +118,27 @@ function removeUserTasks(userId) {
       task.userId = null;
     }
   });
-};
+}
 
 function removerBoardTasks(boardId) {
   const newTasks = DB.tasks.filter(task => task.boardId !== boardId);
   DB.tasks = newTasks;
 }
 
-module.exports = { 
-	getAllUsers, getUserByID, createUser, updateUser, removeUser,
-	getAllBoards, getBoardByID, createBoard, updateBoard, removeBoard,
+module.exports = {
+  getAllUsers,
+  getUserByID,
+  createUser,
+  updateUser,
+  removeUser,
+  getAllBoards,
+  getBoardByID,
+  createBoard,
+  updateBoard,
+  removeBoard,
+  getAllTasks,
+  getTaskByID,
+  createTask,
+  updateTask,
+  removeTask
 };

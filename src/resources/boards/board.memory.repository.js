@@ -2,7 +2,7 @@ const DB = require('../../common/DB');
 
 const getAll = async () => DB.getAllBoards();
 
-const getByID = async (id) => {
+const getByID = async id => {
   const board = await DB.getBoardByID(id);
   if (!board) {
     throw new Error(`Board with id ${id} was not found`);
@@ -10,27 +10,27 @@ const getByID = async (id) => {
   return board;
 };
 
-const create = async (board) => DB.createBoard(board);
+const create = async board => DB.createBoard(board);
 
 const update = async (id, body) => {
-  const boardFromDB = await DB.getBoardByID(id);
-  if (!boardFromDB) {
+  const dbBoards = await DB.getBoardByID(id);
+  if (!dbBoards) {
     throw new Error(`Board with id ${id} was not found`);
   }
 
-  await DB.updateBoard(boardFromDB, body);
+  await DB.updateBoard(dbBoards, body);
   const updatedBoard = await getByID(id);
   return updatedBoard;
 };
 
-const remove = async (id) => {
-  const boardFromDB = await DB.getBoardByID(id);
-  if (!boardFromDB) {
+const remove = async id => {
+  const dbBoards = await DB.getBoardByID(id);
+  if (!dbBoards) {
     throw new Error(`Board with id ${id} was not found`);
   }
 
-	const boardToRemove = JSON.parse(JSON.stringify(boardFromDB));
-  await DB.removeBoard(boardToRemove);
+  const boardToRemove = Object.assign({}, dbBoards);
+  await DB.removeBoard(dbBoards);
   return boardToRemove;
 };
 
