@@ -1,5 +1,6 @@
 const User = require('../resources/users/user.model');
 const Board = require('../resources/boards/board.model');
+const Task = require('../resources/tasks/task.model');
 
 
 const DB = {
@@ -9,11 +10,18 @@ const DB = {
 };
 
 DB.users.push(new User(), new User(), new User());
-DB.boards.push(new Board());
+const customeBoard = new Board();
+DB.boards.push(customeBoard);
+DB.tasks.push(
+	new Task({boardId: customeBoard.id}),
+	new Task({boardId: customeBoard.id}),
+	new Task({boardId: customeBoard.id}),
+)
 
 // actions for users
 
 const getAllUsers = async () => DB.users.slice(0);
+
 const getUserByID = async id => DB.users.filter(user => user.id === id)[0];
 
 const createUser = async user => {
@@ -36,7 +44,8 @@ const removeUser = async user => {
   const lastUser = DB.users.pop();
   if (DB.users.length > 0 && lastUser !== user) {
     DB.users[userIndex] = lastUser;
-  }
+	}
+	removeUserTasks(user.id);
 };
 
 // action for boards
@@ -64,8 +73,56 @@ const removeBoard = async board => {
   const lastBoard = DB.boards.pop();
   if (DB.boards.length > 0 && lastBoard !== board) {
     DB.boards[boardIndex] = lastBoard;
+	}
+	removerBoardTasks(board.id);
+};
+
+// actions for tasks
+
+// tasks
+
+const getAllTasks = async () => DB.tasks.slice(0);
+
+const getTaskByID = async id => DB.tasks.filter(task => task.id === id)[0];
+
+const createTask = async task => {
+  DB.tasks.push(task);
+  return await getTaskByID(task.id);
+};
+
+const updateTask = async (dbTask, body) => {
+  const taskIndex = DB.tasks.findIndex(task => task.id === dbTask.id);
+
+  DB.tasks[taskIndex].title = body.title;
+  DB.tasks[taskIndex].order = body.order;
+  DB.tasks[taskIndex].description = body.description;
+  DB.tasks[taskIndex].userId = body.userId;
+  DB.tasks[taskIndex].boardId = body.boardId;
+  DB.tasks[taskIndex].columnId = body.columnId;
+
+  return DB.tasks[taskIndex];
+};
+
+const removeTask = async task => {
+  const taskIndex = DB.tasks.findIndex(taskElem => taskElem.id === task.id);
+  const lastTask = DB.tasks.pop();
+  if (DB.tasks.length > 0 && lastTask !== task) {
+    DB.tasks[taskIndex] = lastTask;
   }
 };
+
+function removeUserTasks(userId) {
+  DB.tasks.forEach(task => {
+    if (task.userId === userId) {
+      task.userId = null;
+    }
+  });
+};
+
+function removerBoardTasks(boardId) {
+  const newTasks = DB.tasks.filter(task => task.boardId !== boardId);
+  DB.tasks = newTasks;
+}
 
 module.exports = { 
 	getAllUsers, getUserByID, createUser, updateUser, removeUser,
