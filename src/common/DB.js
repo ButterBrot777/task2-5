@@ -1,6 +1,7 @@
 const User = require('../resources/users/user.model');
 const Board = require('../resources/boards/board.model');
 const Task = require('../resources/tasks/task.model');
+const uuid = require('uuid');
 
 const DB = {
   users: [],
@@ -12,9 +13,9 @@ DB.users.push(new User(), new User(), new User());
 const customeBoard = new Board();
 DB.boards.push(customeBoard);
 DB.tasks.push(
-  new Task({ boardId: customeBoard.id }),
-  new Task({ boardId: customeBoard.id }),
-  new Task({ boardId: customeBoard.id })
+  new Task({ boardId: (customeBoard.id = uuid()) }),
+  new Task({ boardId: (customeBoard.id = uuid()) }),
+  new Task({ boardId: (customeBoard.id = uuid()) })
 );
 
 // actions for users
@@ -61,8 +62,12 @@ const createBoard = async board => {
 const updateBoard = async (dbBoard, body) => {
   const boardIndex = DB.boards.findIndex(board => board.id === dbBoard.id);
 
-  DB.boards[boardIndex].title = body.title;
-  DB.boards[boardIndex].columns = body.columns;
+  DB.boards[boardIndex].title = body.title
+    ? body.title
+    : DB.boards[dbBoard.id].title;
+  DB.boards[boardIndex].columns = body.columns
+    ? body.columns
+    : DB.boards[dbBoard.id].columns;
 
   return DB.boards[boardIndex];
 };
@@ -75,12 +80,15 @@ const removeBoard = async board => {
   if (DB.boards.length > 0 && lastBoard !== board) {
     DB.boards[boardIndex] = lastBoard;
   }
-  removerBoardTasks(board.id);
+  removeBoardTasks(board.id);
 };
 
-// actions for tasks
+function removeBoardTasks(boardId) {
+  const newTasks = DB.tasks.filter(task => task.boardId !== boardId);
+  DB.tasks = newTasks;
+}
 
-// tasks
+// actions for tasks
 
 const getAllTasks = async () => DB.tasks.slice(0);
 
@@ -118,11 +126,6 @@ function removeUserTasks(userId) {
       task.userId = null;
     }
   });
-}
-
-function removerBoardTasks(boardId) {
-  const newTasks = DB.tasks.filter(task => task.boardId !== boardId);
-  DB.tasks = newTasks;
 }
 
 module.exports = {
